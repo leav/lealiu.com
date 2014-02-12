@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>EaselJS demo: Simple animation</title>
+	<link href="stylesheets/full-canvas.css" rel="stylesheet" type="text/css">
+	<script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+	<script>
+		
+		var stage, circle;
+
+		function init() {
+			stage = new createjs.Stage("gameCanvas");
+			
+			circle = new createjs.Shape();
+      //circle.graphics.beginFill("rgba(0,0,0,1.0)").drawRect(-200, -200, 400, 400);
+			//circle.graphics.beginFill("rgba(255,0,0,0.5)").drawCircle(0, 0, 40);
+      circle.graphics.beginRadialGradientFill(
+        ["rgba(0,0,0,0.0)", "rgba(0,0,0,1.0)"],
+        [0, 1],
+        0, 0, 0,
+        0, 0, 40
+        );
+      circle.graphics.drawCircle(0, 0, 40);
+			circle.y = 50;
+			stage.addChild(circle);
+			
+			createjs.Ticker.on("tick", tick);
+			createjs.Ticker.setFPS(60);
+		}
+		
+		function tick(event) {
+    
+      stage.canvas.width  = window.innerWidth;
+      stage.canvas.height = window.innerHeight;
+    
+			circle.x = circle.x + 5;
+			if (circle.x > stage.canvas.width) { circle.x = 0; }
+			stage.update(event); // important!!
+		}
+	</script>
+</head>
+<body onLoad="init();">
+	<canvas id="gameCanvas" width="500" height="100">
+		alternate content
+	</canvas>
+</body>
+</html>
