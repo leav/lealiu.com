@@ -59,6 +59,14 @@ function initInput()
 			data.handleClick(x, y);
 		}
 	);
+	
+	var canvas = document.getElementById("gameCanvas");
+	window.addEventListener('keypress', function(event){
+		if (event.keyCode == 120) // X
+		{
+			data.handleSkipToEnd();
+		}
+	}, false);
 }
 
 function handleComplete()

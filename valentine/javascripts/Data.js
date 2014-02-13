@@ -17,14 +17,14 @@ function Data()
 		'我不是高富帅',
 		'无法立刻现身在你旁边给予你巧克力',
 		'也不是文艺青年',
-		'造不出最动人的篇章和最华丽的画卷',
+		'造不出最动人的篇章和最华丽的画卷。',
 		'亲爱的大狸子',
 		'我能给你的只有一个承诺',
 		'一个跟你共同创造世界的承诺',
 		'每个世界所用的一砖一瓦',
 		'就从这个页面开始。',
 	]
-	this.fullText = "黑暗。寻觅。停靠。仰望。\n在七十亿人当中\n找到了因果线那端的你\n我最亲爱的大狸子。\n我不是高富帅\n无法立刻现身在你旁边给予你巧克力\n也不是文艺青年\n造不出最动人的篇章和最华丽的画卷\n亲爱的大狸子\n我能给你的只有一个承诺\n一个跟你共同创造世界的承诺\n每个世界所用的一砖一瓦\n就从这个页面开始。\n\n2014年2月14日";
+	this.fullText = "黑暗。寻觅。停靠。仰望。\n在七十亿人当中\n找到了因果线那端的你\n我最亲爱的大狸子。\n我不是高富帅\n无法立刻现身在你旁边给予你巧克力\n也不是文艺青年\n造不出最动人的篇章和最华丽的画卷。\n亲爱的大狸子\n我能给你的只有一个承诺\n一个跟你共同创造世界的承诺\n每个世界所用的一砖一瓦\n就从这个页面开始。\n\n2014年2月14日";
 	this.state = 'init';
 	this.endX = this.endY = 0;
 }
@@ -50,6 +50,13 @@ Data.prototype.handleClick = function(x, y)
 			this.placeText(this.player.x + plusX, this.player.y + plusY);
 		}
 	}
+}
+
+Data.prototype.handleSkipToEnd = function()
+{
+	this.state = 'end';
+	this.endX = this.player.x;
+	this.endY = this.player.y;
 }
 
 Data.prototype.update = function(event)
