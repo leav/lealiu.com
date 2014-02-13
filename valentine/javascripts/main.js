@@ -7,9 +7,6 @@ var minHeight = 100;
 var maxWidth = 2000;
 var maxHeight = 2000;
 
-var lightOutterRadius = 128.0;
-var maskRadius = maxWidth;
-
 var loader, stage, data;
 
 //
@@ -56,8 +53,10 @@ function initInput()
 {
 	stage.on("stagemousedown", function(event)
 		{
-			console.log("the canvas was clicked at " + data.toX(event.stageX) +","+ data.toY(event.stageY) + " player(" + data.player.x + ',' + data.player.y + ')');
-			data.player.setDest(data.toX(event.stageX), data.toY(event.stageY));
+			//console.log("the canvas was clicked at " + data.toX(event.stageX) +","+ data.toY(event.stageY) + " player(" + data.player.x + ',' + data.player.y + ')');
+			var x = data.toX(event.stageX);
+			var y = data.toY(event.stageY);
+			data.handleClick(x, y);
 		}
 	);
 }
@@ -65,6 +64,7 @@ function initInput()
 function handleComplete()
 {
 	createText();
+	createEndText();
 	createPlayer();
 	createLightMask();
 	
@@ -74,9 +74,20 @@ function handleComplete()
 
 function createText()
 {
-	var text = new createjs.Text("亲爱的大狸子", "bold 20px Arial, 微软雅黑, sans-serif", "#ff7700");
-	text.x = data.player.getScreenX();
-	text.y = data.player.getScreenY();
+	var text = new createjs.Text("", "bold 20px Arial, 微软雅黑, sans-serif", "#000000");
+  text.name = 'text';
+	stage.addChild(text);
+}
+
+function createEndText()
+{
+	var text = new createjs.Text(data.fullText, "bold 20px Arial, 微软雅黑, sans-serif", "#000000");
+  text.name = 'endText';
+	var rect = text.getBounds();
+	text.regX = rect.width / 2;
+	text.regY = rect.height / 2;
+	text.alpha = 0;
+	text.cache(0, 0, maxWidth, maxHeight);
 	stage.addChild(text);
 }
 
@@ -122,33 +133,18 @@ function createPlayer()
 function createLightMask()
 {
 	var lightMask = new createjs.Shape();
+	var maskRadius = maxWidth;
+
 	lightMask.name = 'lightMask';
 	lightMask.graphics.beginRadialGradientFill(
 		["rgba(0,0,0,0.0)", "rgba(0,0,0,1.0)", "rgba(0,0,0,1.0)"],
-		[0.0, lightOutterRadius / maskRadius, 1],
+		[0.0, data.player.sight / maskRadius, 1],
 		0, 0, 0,
 		0, 0, maskRadius
 	);
 	lightMask.graphics.drawCircle(0, 0, maskRadius);
 	stage.addChild(lightMask);
-}
-
-function circleSample()
-{
-	circle = new createjs.Shape();
-	//circle.graphics.beginFill("rgba(0,0,0,1.0)").drawRect(-200, -200, 400, 400);
-	//circle.graphics.beginFill("rgba(255,0,0,0.5)").drawCircle(0, 0, 40);
-	circle.graphics.beginRadialGradientFill(
-		["rgba(0,0,0,0.0)", "rgba(0,0,0,1.0)"],
-		[0, 1],
-		0, 0, 0,
-		0, 0, 40
-	);
-	circle.graphics.drawCircle(0, 0, 40);
-	circle.y = 50;
-	circle.compositeOperation = 'XOR';
-	stage.addChild(circle);
-
+	lightMask.cache(-maskRadius / 2, -maskRadius / 2, maskRadius, maskRadius);
 }
 
 //
@@ -157,16 +153,52 @@ function circleSample()
 
 function update(event) {
 	// update data
-	data.player.update();
+	data.update();
 	
 	// resize the canvas
 	stage.canvas.width  = getCanvasWidth();
 	stage.canvas.height = getCanvasHeight();
 
-	// circle.x = circle.x + 5;
-	// if (circle.x > stage.canvas.width) { circle.x = 0; }
+	// update display objects
+	var text = stage.getChildByName('text');
 	var player = stage.getChildByName('player');
 	var lightMask = stage.getChildByName('lightMask');
+	var endText = stage.getChildByName('endText');
+
+  // text
+	if (data.text.text != null)
+	{
+		var updateCache = false;
+		if (text.text != data.text.text)
+		{
+			text.text = data.text.text;
+			updateCache = true;
+		}
+		text.x = data.toScreenX(data.text.x);
+		text.y = data.toScreenY(data.text.y);
+		var rect = text.getBounds();
+		switch (data.text.anchor)
+		{
+			case 1:
+				text.regX = 0;
+				text.regY = rect.height;
+				break;
+			case 3:
+				text.regX = rect.width;
+				text.regY = rect.height;
+				break;
+			case 7:
+				text.regX = 0;
+				text.regY = 0;
+				break;
+			case 9:
+				text.regX = rect.width;
+				text.regY = 0;
+				break;
+		}
+	}
+  
+	// player
 	var updateAnimation = false;
 	player.x = lightMask.x = data.player.getScreenX();
 	player.y = lightMask.y = data.player.getScreenY();
@@ -187,6 +219,23 @@ function update(event) {
 		player.gotoAndPlay(animationName);
 	}
 	
-	stage.update(event); // important!!
+	// end text
+	if (data.state == 'end')
+	{
+		text.visible = false;
+		endText.x = data.toScreenX(data.endX);
+		endText.y = data.toScreenY(data.endY);
+		if (lightMask.alpha > 0)
+		{
+			lightMask.alpha -= 1.0 / 180;
+		}
+		else if (endText.alpha < 1.0)
+		{
+			endText.alpha += 1.0 / 180;
+		}
+	}
+	
+	// render the stage
+	stage.update(event);
 }
 
