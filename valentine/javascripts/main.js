@@ -37,6 +37,7 @@ function getCanvasHeight()
 
 function init() {
 	stage = new createjs.Stage("gameCanvas");
+	createjs.Touch.enable(stage);
 	
 	manifest = [
 		{src:"valentine/images/player.png", id:"player"},
