@@ -18,7 +18,7 @@ function init()
 	stage = new createjs.Stage("mainCanvas");
 	createjs.Touch.enable(stage);
 
-	slideshowData = {container: new createjs.Container(), bitmaps: [], index: -1, interval: 20, count: 0};
+	slideshowData = {container: new createjs.Container(), bitmaps: [], index: -1, interval: 40, count: 0};
 	slideshowData.container.x = 304;
 	slideshowData.container.y = 159;
 	slideshowData.container.scaleX = slideshowData.container.scaleY = 0.167;
@@ -105,12 +105,12 @@ function update(event)
 
 function fadeIn(object)
 {
-	createjs.Tween.get(object).to({alpha:1.0}, 200, createjs.Ease.get(1));
+	createjs.Tween.get(object).to({alpha:1.0}, 400, createjs.Ease.get(1));
 }
 
 function fadeOut(object)
 {
-	createjs.Tween.get(object).to({alpha:0.0}, 200, createjs.Ease.get(-1));
+	createjs.Tween.get(object).to({alpha:0.0}, 400, createjs.Ease.get(-1));
 }
 
 
