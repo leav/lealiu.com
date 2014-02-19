@@ -7,8 +7,7 @@ var stage, slideshowData;
 //
 // init
 //
-function init()
-{
+function init() {
 	local = (window.location.protocol == 'file:');
 	console.log('local = ' + local);
 	
@@ -29,8 +28,7 @@ function init()
 	createjs.Ticker.addEventListener("tick", update);
 }
 
-function loadChamber()
-{
+function loadChamber() {
 	var preload = new createjs.LoadQueue(!local); // use tag loading if local
 	preload.on("fileload", function(event){
 		console.log(event.item.src + ' loaded!')
@@ -44,8 +42,7 @@ function loadChamber()
 	preload.loadFile('designs/chamber.jpg');
 }
 
-function loadSlideShow()
-{
+function loadSlideShow() {
 	var preload = new createjs.LoadQueue(!local); // use tag loading if local
 	var folder = 'designs/'
 	var manifest = [
@@ -61,8 +58,7 @@ function loadSlideShow()
 	preload.loadManifest(manifest);
 }
 
-function handleFileLoad(event)
-{
+function handleFileLoad(event) {
 	console.log(event.item.src + ' loaded!')
 	var bitmap = new createjs.Bitmap(event.result);
 	bitmap.alpha = 0.0;
@@ -70,16 +66,14 @@ function handleFileLoad(event)
 	slideshowData.container.addChild(bitmap);
 }
 
-function handleComplete(event)
-{
+function handleComplete(event) {
 	console.log('load complete!')
 }
 
 //
 // update
 //
-function update(event)
-{
+function update(event) {
 	if (slideshowData.bitmaps.length > 0)
 	{
 		if (slideshowData.index == -1)
@@ -103,23 +97,10 @@ function update(event)
 	stage.update();
 }
 
-function fadeIn(object)
-{
+function fadeIn(object) {
 	createjs.Tween.get(object).to({alpha:1.0}, 400, createjs.Ease.get(1));
 }
 
-function fadeOut(object)
-{
+function fadeOut(object) {
 	createjs.Tween.get(object).to({alpha:0.0}, 400, createjs.Ease.get(-1));
 }
-
-
-
-		// createjs.Tween.get(circle, {loop:true}, true) // get a new tween targeting circle
-			// .to({x:500,y:200,alpha:0.1},1000,createjs.Ease.get(1)) // tween x/y/alpha properties over 1s (1000ms) with ease out
-			// .to({x:0},1000,createjs.Ease.get(-1)) // tween x over 0.5s with ease in
-			// .to({y:400}) // jump to new y property (defaults to a duration of 0)
-			// .call(console.log, ["wait..."], console) // call console.log("wait...")
-			// .wait(800) // wait for 0.8s
-			// .to({y:0,alpha:1},300) // tween y/alpha over 0.3s
-			// .call(console.log, ["done!"],console) // call console.log("done!");
