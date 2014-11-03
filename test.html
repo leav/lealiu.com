@@ -1,14 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8"> 
 	<title>Lea.TEST</title>
-	<link href="stylesheets/core.css" rel="stylesheet" type="text/css">
-	<script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
-	<script src="javascripts/main.js"></script>
+	<!-- <link href="stylesheets/core.css" rel="stylesheet" type="text/css"> -->
+	<!-- <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script> -->
+	<script src="javascripts/createjs-2013.12.12.min.js"></script>
+	<script src="javascripts/assets.js"></script>
+	<script src="javascripts/Utils.js"></script>
+	<script src="javascripts/AsyncImage.js"></script>
+	
+	<script src="javascripts/About.js"></script>
+	<script src="javascripts/Background.js"></script>
+	<script src="javascripts/ConsoleLogger.js"></script>
+	<script src="javascripts/Contact.js"></script>
+	<script src="javascripts/Gallery.js"></script>
+	<script src="javascripts/Menu.js"></script>
+	<script src="javascripts/SocialMedia.js"></script>
+	<script src="javascripts/StateMachine.js"></script>
+	<script src="javascripts/Works.js"></script>
+	
+	<script src="javascripts/Main.js"></script>
 </head>
-<body onLoad="init();">
-	<canvas id="mainCanvas" width="658" height="525">
-		alternate content
-	</canvas>
+<body onLoad="init();" style="width: 100%; height: 100%; margin: 0; padding: 0; border: 0; overflow-x: hidden;">
+<!-- 	<div id="menu" style="display: block; top: 0px; position: fixed;">
+		<canvas id="menuCanvas" width="640" height="812">
+			alternate content
+		</canvas>
+	</div> -->
+	<div id="mainDiv" style="">
+		<canvas id="mainCanvas" style="margin-left: auto; margin-right: auto; display: block; position: fixed;">
+			alternate content
+		</canvas>
+	</div>
 </body>
 </html>

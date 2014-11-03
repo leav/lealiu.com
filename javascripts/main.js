@@ -1,106 +1,238 @@
 //
 // globals
 //
-var local;
-var stage, slideshowData;
+var $local;
+var $stage, $slideshowData, $sceneManager, $log;
+// assets.js: $assets, $tags
 
 //
 // init
 //
 function init() {
-	local = (window.location.protocol == 'file:');
-	console.log('local = ' + local);
+	$log = new ConsoleLogger();
 	
-	// hashtag test
-	console.log('hashtag: ' + window.location.hash);
+	$local = (window.location.protocol == 'file:');
+	$log.debug('$local = ' + $local);
 	
-	stage = new createjs.Stage("mainCanvas");
-	createjs.Touch.enable(stage);
+	// create menu state
+	// $menuStage = new createjs.Stage('menuCanvas');
+	// $menuStage.enableMouseOver();
+	
+	// create stage
+	$stage = new createjs.Stage('mainCanvas');
+	$stage.enableMouseOver();
+	
+	// create layers
+	createLayers();
+	
+	// create state machine
+	$state = new StateMachine();
+	defineState($state);
+	
+	// create background
+	$background = new Background();
+	$backgroundLayer.addChild($background);
+	
+	// create Menu
+	$menuLayer.addChild(new Menu());
+	
+	// create Gallery
+	$contentLayer.addChild(new Gallery());
+	
+	// create About
+	$contentLayer.addChild(new About());
 
-	slideshowData = {container: new createjs.Container(), bitmaps: [], index: -1, interval: 40, count: 0};
-	slideshowData.container.x = 304;
-	slideshowData.container.y = 159;
-	slideshowData.container.scaleX = slideshowData.container.scaleY = 0.167;
+	// create Works
+	$contentLayer.addChild(new Works());
 	
-	loadChamber();
+	// create Contact
+	$contentLayer.addChild(new Contact());
+
+
+	// hashtag
+	loadPageWithHash(window.location.hash);
+	window.addEventListener('hashchange', onHashChange);
 	
+	// update
 	createjs.Ticker.setFPS(20);
-	createjs.Ticker.addEventListener("tick", update);
+	createjs.Ticker.addEventListener("tick", onUpdate);
 }
 
-function loadChamber() {
-	var preload = new createjs.LoadQueue(!local); // use tag loading if local
-	preload.on("fileload", function(event){
-		console.log(event.item.src + ' loaded!')
-		var bitmap = new createjs.Bitmap(event.result);
-		stage.addChild(bitmap);
-		bitmap.alpha = 0.0;
-		fadeIn(bitmap);
-		stage.addChild(slideshowData.container); // so the slideshow is rendered after chamber
-		loadSlideShow();
-	});
-	preload.loadFile('designs/chamber.jpg');
+function createLayers() {
+	$log.debug('createLayers()');
+	$backgroundLayer = new createjs.Container();
+	$stage.addChild($backgroundLayer);
+	$imageLayer = new createjs.Container();
+	$stage.addChild($imageLayer);
+	$menuLayer = new createjs.Container();
+	$stage.addChild($menuLayer);
+	$contentLayer = new createjs.Container();
+	$stage.addChild($contentLayer);
 }
 
-function loadSlideShow() {
-	var preload = new createjs.LoadQueue(!local); // use tag loading if local
-	var folder = 'designs/'
-	var manifest = [
-		{src: folder + 'slideshow0.jpg', id:'slideshow0'},
-		{src: folder + 'slideshow1.jpg', id:'slideshow1'},
-		{src: folder + 'slideshow2.jpg', id:'slideshow2'},
-		{src: folder + 'slideshow3.jpg', id:'slideshow3'},
-		{src: folder + 'slideshow4.jpg', id:'slideshow4'},
-		{src: folder + 'slideshow5.jpg', id:'slideshow5'},
-	];
-	preload.on("fileload", handleFileLoad);
-	preload.on("complete", handleComplete);
-	preload.loadManifest(manifest);
-}
+var $noReloading = false;
 
-function handleFileLoad(event) {
-	console.log(event.item.src + ' loaded!')
-	var bitmap = new createjs.Bitmap(event.result);
-	bitmap.alpha = 0.0;
-	slideshowData.bitmaps.push(bitmap);
-	slideshowData.container.addChild(bitmap);
-}
-
-function handleComplete(event) {
-	console.log('load complete!')
-}
-
-//
-// update
-//
-function update(event) {
-	if (slideshowData.bitmaps.length > 0)
+function setHashTagWithoutReloading() {
+	var args = Array.prototype.slice.call(arguments, 0);
+	var hash = "#!:" + args.join('/');
+	if (window.location.hash != hash)
 	{
-		if (slideshowData.index == -1)
-		{
-			slideshowData.index = 0;
-			fadeIn(slideshowData.bitmaps[0]);
-		}
-		else
-		{
-			slideshowData.count++;
-			if (slideshowData.count > slideshowData.interval)
-			{
-				slideshowData.count = 0;
-				fadeOut(slideshowData.bitmaps[slideshowData.index]);
-				slideshowData.index = (slideshowData.index + 1) % slideshowData.bitmaps.length;
-				fadeIn(slideshowData.bitmaps[slideshowData.index]);
-			}
-		}
+		$noReloading = true;
+		window.location.hash = hash;
+	}
+}
+
+function onHashChange() {
+	$log.debug('hash change');
+	loadPageWithHash(window.location.hash)
+}
+
+function loadPageWithHash(hashtag) {
+	if ($noReloading) {
+		$log.debug('noReloading');
+		$noReloading = false;
+		return;
 	}
 	
-	stage.update();
+	$log.debug('hashtag URL = ' + hashtag);
+	var tags = hashtagSplit(window.location.hash);
+
+	if (tags.length > 0) {
+		// extract category and page
+		var category = tags[0].toLocaleLowerCase();
+		// call appropriate handler for each category
+		if (category.localeCompare('gallery') === 0) {
+			$state.switch('Gallery', tags[1], tags[2], tags[3]);
+			return;
+		}		
+		if (category.localeCompare('about') === 0) {
+			$state.switch('About');
+			return;
+		}
+		if (category.localeCompare('works') === 0) {
+			$state.switch('Works', tags[1]);
+			return;
+		}
+		if (category.localeCompare('contact') === 0) {
+			$state.switch('Contact');
+			return;
+		}
+	}
+	// default to home
+	$state.switch('Home');
 }
 
-function fadeIn(object) {
-	createjs.Tween.get(object).to({alpha:1.0}, 400, createjs.Ease.get(1));
+function defineState(state) {
+	state.addEventListener('switch', function(event) {
+		var state = event.newState;
+		$log.debug('main state swith, state = ' + state);
+		var tag, page, image;
+		if (event.args) {
+			tag = event.args[0];
+			page = event.args[1];
+			image = event.args[2];
+		}
+		if (state == 'Gallery') {
+			if (!tag)	{
+				tag = 'All';
+			}
+			page = parseInt(page, 10);
+			if (isNaN(page)) {
+				page = 1;
+			}
+			if (image) {
+				setHashTagWithoutReloading('Gallery', tag, page.toString(), image);
+			}
+			else {
+				setHashTagWithoutReloading('Gallery', tag, page.toString());
+			}
+		}
+		else if (state == 'Works') {
+			page = image = null;
+			if (tag) {
+				setHashTagWithoutReloading(state, tag);
+			}
+			else {
+				setHashTagWithoutReloading(state);
+			}
+		}
+		else {
+			setHashTagWithoutReloading(state);
+			tag = page = image = null;
+		}
+		$state.tag = tag;
+		$state.page = page;
+		$state.image = image;
+	});
+	
 }
 
-function fadeOut(object) {
-	createjs.Tween.get(object).to({alpha:0.0}, 400, createjs.Ease.get(-1));
+var $imageCache = {}
+function getImage(asset) {
+	if ($imageCache[asset]) {
+		return $imageCache[asset];
+	}
+	else {
+		var image = AsyncImage.get(asset);
+		if (image) {
+			$imageLayer.addChild(image);
+		}
+		return image;
+	}
 }
+
+function showImage(asset)
+{
+	var image = getImage(asset);
+	if (image) {
+		image.visible = true;
+	}
+}
+
+function hideImage(asset)
+{
+	var image = getImage(asset);
+	if (image) {
+		image.visible = false;
+	}
+}
+
+
+//
+// update, called every frame
+//
+function onUpdate(event) {
+	// resize the canvas
+	$stage.canvas.width = $background.width;
+	$stage.canvas.height = getCanvasHeight();
+	// update the stage
+	$stage.update(event)
+	
+
+	// var bg = findAsset('Back-L2');
+	// scale getCanvasHeight() / bg.height;
+	// bg.width
+	
+	// $menuStage.canvas.width = getWindowWidth();
+	// $menuStage.canvas.height = getWindowHeight();
+	// $menuStage.update(event)
+}
+
+//
+// split the hash tag by '/'
+//
+function hashtagSplit(hashtag) {
+	var result = [];
+	if (hashtag != undefined && hashtag.substring(0, 3) == '#!:') {
+		result = hashtag.substring(3).split('/');
+	}
+	$log.debug('hashtagSplit(): ' + result.toString());
+	return result;
+}
+
+function createBlackRect(width, height) {
+	var image = new createjs.Shape();
+	image.graphics.beginFill("rgba(0,0,0,0.5)").drawRect(0, 0, width, height);
+	return image;
+}
+
