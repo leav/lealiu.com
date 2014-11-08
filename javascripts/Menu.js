@@ -38,6 +38,16 @@ Menu.prototype.initialize = function() {
 	eyeBall.x = eyeBallXMin + eyeBallXRange / 2;
 	eyeBall.y = eyeBallYMin + eyeBallYRange / 2;
 	
+	// create Dialog
+	$dialog = new DialogBubble();
+	character.addChild($dialog);
+	$dialog.x = character.asset.width * 0.7;
+	$dialog.y = 120;
+	console.log($dialog);
+	$dialog.setText('Welcome!', 0, 3);
+	$dialog.setText('Click here to start browsing my portfolio', 4, 6);
+
+	
 	document.addEventListener('mousemove', function (event) {
 		var dot, eventDoc, doc, body, pageX, pageY;
 
@@ -81,24 +91,28 @@ Menu.prototype.initialize = function() {
 	button.addEventListener('click', function(){
 		$state.switch('About');
 	});
+	button.dialogText = 'Want to know about me?';
 	
 	button = createButton('Button_Works');
 	top.addChild(button);
 	button.addEventListener('click', function(){
 		$state.switch('Works');
 	});
+	button.dialogText = 'Holes';
 	
 	button = createButton('Button_Gallery');
 	top.addChild(button);
 	button.addEventListener('click', function(){
 		$state.switch('Gallery', 'All', 1);
 	});
+	button.dialogText = 'Doodles';
 	
 	button = createButton('Button_Contact');
 	top.addChild(button);
 	button.addEventListener('click', function(){
 		$state.switch('Contact');
 	});
+	button.dialogText = 'Ways to catch me';
 
 	// logo
 	
@@ -143,6 +157,8 @@ Menu.prototype.initialize = function() {
 			character.x = 0.05 * getWindowWidth();
 			character.y = getWindowHeight();
 			character.scaleX = character.scaleY = 0.8 * getWindowHeight() / character.asset.height;
+			
+			
 
 			logo.regX = logo.asset.width + padding * 4;
 			logo.x = getWindowWidth();

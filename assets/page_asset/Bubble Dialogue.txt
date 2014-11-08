@@ -5,7 +5,7 @@ comic sans MS
 1、欢迎!
    (2秒后翻页)点击“这里”开始浏览我的Portfolio. （开启自动播放功能）
 Welcome!
-Click this bubble to start browsing my portfolio
+Click here to start browsing my portfolio
 
 
 无任何激活状态下随机显示

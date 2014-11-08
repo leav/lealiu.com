@@ -25,11 +25,19 @@ function createButton(assetName)
 	container.addEventListener("mouseover", function(event){
 		container.on.visible = true;
 		container.off.visible = false;
+		if ($dialog && container.dialogText) {
+			$dialog.setText(container.dialogText);
+			$dialog.textOwner = container;
+		}
 	});
 	
 	container.mouseout = function(event){
 		container.on.visible = false;
 		container.off.visible = true;
+		if ($dialog && $dialog.textOwner == container) {
+			$dialog.setText();
+			$dialog.textOwner = null;
+		}
 	};
 	container.addEventListener("mouseout", container.mouseout);
 
@@ -41,13 +49,14 @@ function createButton(assetName)
 }
 
 function addCursorPointer(container) {
-	container.addEventListener("mouseover", function(event){
-		document.body.style.cursor = 'pointer';
-	});
+	container.cursor = 'pointer';
+	// container.addEventListener("mouseover", function(event){
+		// document.body.style.cursor = 'pointer';
+	// });
 	
-	container.addEventListener("mouseout", function(event){
-		document.body.style.cursor = 'auto';
-	});
+	// container.addEventListener("mouseout", function(event){
+		// document.body.style.cursor = 'auto';
+	// });
 }
 
 //
@@ -226,3 +235,10 @@ function fadeIn(object) {
 function fadeOut(object) {
 	createjs.Tween.get(object).to({alpha:0.0}, 400, createjs.Ease.get(-1));
 }
+
+//+ Jonas Raoni Soares Silva
+//@ http://jsfromhell.com/array/shuffle [v1.0]
+function shuffle(o){ //v1.0
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};

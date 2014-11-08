@@ -3,6 +3,7 @@
 //
 var $local;
 var $stage, $slideshowData, $sceneManager, $log;
+var $dialog;
 // assets.js: $assets, $tags
 
 //
@@ -35,7 +36,7 @@ function init() {
 	
 	// create Menu
 	$menuLayer.addChild(new Menu());
-	
+		
 	// create Gallery
 	$contentLayer.addChild(new Gallery());
 	

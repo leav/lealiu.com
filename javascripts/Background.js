@@ -32,10 +32,13 @@ Background.prototype.initialize = function() {
 	modeling.addEventListener('click', function(){
 		$state.switch('Gallery', 'Modeling', 1);
 	});
+	modeling.dialogText = "Can't affor GK >.<";
+
 	
 	var autoplay = createButton('SL_autoplay');
 	back.addChild(autoplay);
 	buttons.push(autoplay);
+	autoplay.dialogText = "Start browsing my portfolio";
 	
 	var fatloot = createButton('SL_fatloot');
 	back.addChild(fatloot);
@@ -43,6 +46,7 @@ Background.prototype.initialize = function() {
 	fatloot.addEventListener('click', function(){
 		$state.switch('Works', 'Fatloot');
 	});
+	fatloot.dialogText = "A story about fat people pwning";
 	
 	var gallery = createButton('SL_gallery');
 	back.addChild(gallery);
@@ -50,6 +54,7 @@ Background.prototype.initialize = function() {
 	gallery.addEventListener('click', function(){
 		$state.switch('Gallery');
 	});
+	gallery.dialogText = "Many doodles";
 	
 	var honglou = createButton('SL_honglou');
 	back.addChild(honglou);
@@ -57,13 +62,15 @@ Background.prototype.initialize = function() {
 	honglou.addEventListener('click', function(){
 		$state.switch('Works', 'Honglou');
 	});
+	honglou.dialogText = "A big hole!";
 	
-	var Honlougallery = createButton('SL_Honlougallery');
-	back.addChild(Honlougallery);
-	buttons.push(Honlougallery);
-	Honlougallery.addEventListener('click', function(){
+	var honlougallery = createButton('SL_Honlougallery');
+	back.addChild(honlougallery);
+	buttons.push(honlougallery);
+	honlougallery.addEventListener('click', function(){
 		$state.switch('Gallery', 'Dream of the Red Chamber');
 	});
+	honlougallery.dialogText = "Nice scenes meow!";
 	
 	var leatest = createButton('SL_leatest');
 	back.addChild(leatest);
@@ -74,6 +81,7 @@ Background.prototype.initialize = function() {
 	leatest.addEventListener('click', function(){
 		a.click();
 	});
+	leatest.dialogText = "Don't click! Secret!";
 
 	var works = createButton('SL_works');
 	back.addChild(works);
@@ -81,6 +89,7 @@ Background.prototype.initialize = function() {
 	works.addEventListener('click', function(){
 		$state.switch('Works');
 	});
+	works.dialogText = 'Back to work!';
 	
 	var autoSlideAssets = findAssetsByTags(['AutoSlides']);
 	var autoSlideBack = new AsyncImage();
