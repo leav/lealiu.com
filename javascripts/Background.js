@@ -15,8 +15,11 @@ Background.prototype.initialize = function() {
 	var l3 = AsyncImage.get('Back-L3');
 	back.addChild(l3);
 	
+	var l2Contents = new createjs.Container();
+	back.addChild(l2Contents);
+	
 	var l2 = AsyncImage.get('Back-L2');
-	back.addChild(l2);
+	l2Contents.addChild(l2);
 		
 	var fullMask = new createjs.Shape();
 	this.addChild(fullMask);
@@ -27,7 +30,7 @@ Background.prototype.initialize = function() {
 	var buttons = [];
 	
 	var modeling = createButton('SL_3D');
-	back.addChild(modeling);
+	l2Contents.addChild(modeling);
 	buttons.push(modeling);
 	modeling.addEventListener('click', function(){
 		$state.switch('Gallery', 'Modeling', 1);
@@ -36,12 +39,12 @@ Background.prototype.initialize = function() {
 
 	
 	var autoplay = createButton('SL_autoplay');
-	back.addChild(autoplay);
+	l2Contents.addChild(autoplay);
 	buttons.push(autoplay);
 	autoplay.dialogText = "Start browsing my portfolio";
 	
 	var fatloot = createButton('SL_fatloot');
-	back.addChild(fatloot);
+	l2Contents.addChild(fatloot);
 	buttons.push(fatloot);
 	fatloot.addEventListener('click', function(){
 		$state.switch('Works', 'Fatloot');
@@ -49,7 +52,7 @@ Background.prototype.initialize = function() {
 	fatloot.dialogText = "A story about fat people pwning";
 	
 	var gallery = createButton('SL_gallery');
-	back.addChild(gallery);
+	l2Contents.addChild(gallery);
 	buttons.push(gallery);
 	gallery.addEventListener('click', function(){
 		$state.switch('Gallery');
@@ -57,7 +60,7 @@ Background.prototype.initialize = function() {
 	gallery.dialogText = "Many doodles";
 	
 	var honglou = createButton('SL_honglou');
-	back.addChild(honglou);
+	l2Contents.addChild(honglou);
 	buttons.push(honglou);
 	honglou.addEventListener('click', function(){
 		$state.switch('Works', 'Honglou');
@@ -65,7 +68,7 @@ Background.prototype.initialize = function() {
 	honglou.dialogText = "A big hole!";
 	
 	var honlougallery = createButton('SL_Honlougallery');
-	back.addChild(honlougallery);
+	l2Contents.addChild(honlougallery);
 	buttons.push(honlougallery);
 	honlougallery.addEventListener('click', function(){
 		$state.switch('Gallery', 'Dream of the Red Chamber');
@@ -73,7 +76,7 @@ Background.prototype.initialize = function() {
 	honlougallery.dialogText = "Nice scenes meow!";
 	
 	var leatest = createButton('SL_leatest');
-	back.addChild(leatest);
+	l2Contents.addChild(leatest);
 	buttons.push(leatest);
 	var a = document.createElement('a');
 	a.setAttribute('target', '_blank');
@@ -84,7 +87,7 @@ Background.prototype.initialize = function() {
 	leatest.dialogText = "Don't click! Secret!";
 
 	var works = createButton('SL_works');
-	back.addChild(works);
+	l2Contents.addChild(works);
 	buttons.push(works);
 	works.addEventListener('click', function(){
 		$state.switch('Works');
@@ -94,8 +97,8 @@ Background.prototype.initialize = function() {
 	var autoSlideAssets = findAssetsByTags(['AutoSlides']);
 	var autoSlideBack = new AsyncImage();
 	var autoSlide = new AsyncImage();
-	back.addChild(autoSlideBack);
-	back.addChild(autoSlide);
+	l2Contents.addChild(autoSlideBack);
+	l2Contents.addChild(autoSlide);
 	autoSlideBack.x = autoSlide.x = 1334;
 	autoSlideBack.y = autoSlide.y = 403;
 
@@ -127,13 +130,27 @@ Background.prototype.initialize = function() {
 	$state.addEventListener('switch', doLayout);
 	window.addEventListener("resize", doLayout);
 	
-	var doScroll = function(){
-		var scroll = document.body.scrollLeft / (document.body.scrollWidth - document.body.clientWidth);
-		l1.x = (l2.asset.width - l1.asset.width) * scroll;
-		l3.x = (l2.asset.width - l3.asset.width) * scroll;
+	
+	var doMousemove = function() {
+		l2Contents.x = (getWindowWidth() / back.scaleX - l2.asset.width) * (getMousePageX() / getWindowWidth());
+		l2Contents.y = (getWindowHeight() / back.scaleY - l2.asset.height) * (getMousePageY() / getWindowHeight());
+		l1.x = (getWindowWidth() / back.scaleX - l1.asset.width) * (getMousePageX() / getWindowWidth());
+		l1.y = (getWindowHeight() / back.scaleY - l1.asset.height) * (getMousePageY() / getWindowHeight());
+		l3.x = (getWindowWidth() / back.scaleX - l3.asset.width) * (getMousePageX() / getWindowWidth());
+		l3.y = (getWindowHeight() / back.scaleY - l3.asset.height) * (getMousePageY() / getWindowHeight());
+		// $log.debug('doMousemove l2.x = ' + l2.x);
+		// $log.debug('getMousePageX() / getWindowWidth() = ' + getMousePageX() / getWindowWidth());
 	};
-	doScroll();
-	window.addEventListener("scroll", doScroll);
+	document.addEventListener('mousemove', doMousemove);
+	
+	
+	// var doScroll = function(){
+		// var scroll = document.body.scrollLeft / (document.body.scrollWidth - document.body.clientWidth);
+		// l1.x = (l2.asset.width - l1.asset.width) * scroll;
+		// l3.x = (l2.asset.width - l3.asset.width) * scroll;
+	// };
+	// doScroll();
+	// window.addEventListener("scroll", doScroll);
 
 	if (autoSlideAssets.length > 0)
 	{

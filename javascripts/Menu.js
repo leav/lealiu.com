@@ -21,7 +21,7 @@ Menu.prototype.initialize = function() {
 	var socialMedia = new SocialMedia();
 	this.addChild(socialMedia);
 	
-	var character = AsyncImage.get('Character');
+	var character = new createjs.Container();
 	this.addChild(character);
 	
 	var eyeWhite = AsyncImage.get('ani_eyes_white');
@@ -38,10 +38,25 @@ Menu.prototype.initialize = function() {
 	eyeBall.x = eyeBallXMin + eyeBallXRange / 2;
 	eyeBall.y = eyeBallYMin + eyeBallYRange / 2;
 	
+	var characterBody = AsyncImage.get('Character');
+	character.addChild(characterBody);
+	
+	var eyeBlink2 = AsyncImage.get('ani_eyes_blink2');
+	character.addChild(eyeBlink2);
+	eyeBlink2.x = 295;
+	eyeBlink2.y = 137;
+	eyeBlink2.visible = false;
+	
+	var eyeBlink3 = AsyncImage.get('ani_eyes_blink3');
+	character.addChild(eyeBlink3);
+	eyeBlink3.x = 295;
+	eyeBlink3.y = 137;
+	eyeBlink3.visible = false;
+	
 	// create Dialog
 	$dialog = new DialogBubble();
 	character.addChild($dialog);
-	$dialog.x = character.asset.width * 0.7;
+	$dialog.x = characterBody.asset.width * 0.7;
 	$dialog.y = 120;
 	console.log($dialog);
 	$dialog.setText('Welcome!', 0, 3);
@@ -49,28 +64,8 @@ Menu.prototype.initialize = function() {
 
 	
 	document.addEventListener('mousemove', function (event) {
-		var dot, eventDoc, doc, body, pageX, pageY;
-
-		event = event || window.event; // IE-ism
-
-		// If pageX/Y aren't available and clientX/Y are,
-		// calculate pageX/Y - logic taken from jQuery.
-		// (This is to support old IE)
-		if (event.pageX == null && event.clientX != null) {
-				eventDoc = (event.target && event.target.ownerDocument) || document;
-				doc = eventDoc.documentElement;
-				body = eventDoc.body;
-
-				event.pageX = event.clientX +
-					(doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-					(doc && doc.clientLeft || body && body.clientLeft || 0);
-				event.pageY = event.clientY +
-					(doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-					(doc && doc.clientTop  || body && body.clientTop  || 0 );
-		}
-		
-		eyeBall.x = event.pageX / getWindowWidth() * eyeBallXRange + eyeBallXMin;
-		eyeBall.y = event.pageY / getWindowHeight() * eyeBallYRange + eyeBallYMin;		
+		eyeBall.x	= getMousePageX() / getWindowWidth() * eyeBallXRange + eyeBallXMin;
+		eyeBall.y	= getMousePageY() / getWindowHeight() * eyeBallYRange + eyeBallYMin;
 	});
 	
 	
@@ -153,10 +148,10 @@ Menu.prototype.initialize = function() {
 			maskBottom.scaleX = getWindowWidth() / maskBottom.asset.width;
 			maskBottom.scaleY = 0.05 * getWindowHeight() / maskBottom.asset.height;
 			
-			character.regY = character.asset.height;
+			character.regY = characterBody.asset.height;
 			character.x = 0.05 * getWindowWidth();
 			character.y = getWindowHeight();
-			character.scaleX = character.scaleY = 0.8 * getWindowHeight() / character.asset.height;
+			character.scaleX = character.scaleY = 0.8 * getWindowHeight() / characterBody.asset.height;
 			
 			
 
@@ -212,6 +207,50 @@ Menu.prototype.initialize = function() {
 	window.addEventListener("resize", doLayout);
 	
 	doLayout();
+	
+	
+	var blinkTimeoutMin = 3;
+	var blinkTimeoutMax = 6;
+	var blinkTimeout = blinkTimeoutMin + Math.random() * (blinkTimeoutMax - blinkTimeoutMin);
+	var blinkNumberCount = 1 + Math.floor(Math.random() * 2);
+	var blink2Timeout = 0.05;
+	var blink3Timeout = 0.05;
+	var blinkCount = 0;
+	var blinkState = 'waiting';
+	createjs.Ticker.addEventListener("tick", function(event){
+		blinkCount += event.delta / 1000;
+		if (blinkState == 'waiting') {
+			if (blinkCount >= blinkTimeout) {
+				blinkState = 'blink2';
+				eyeBlink2.visible = true;
+				blinkCount = 0;
+				blinkTimeout = blinkTimeoutMin + Math.random() * (blinkTimeoutMax - blinkTimeoutMin);;
+			}
+		}
+		else if (blinkState == 'blink2') {
+			if (blinkCount >= blink2Timeout) {
+				blinkState = 'blink3';
+				eyeBlink2.visible = false;
+				eyeBlink3.visible = true;
+				blinkCount = 0;
+			}
+		}
+		else if (blinkState == 'blink3') {
+			if (blinkCount >= blink3Timeout) {
+				eyeBlink3.visible = false;
+				blinkCount = 0;
+				blinkNumberCount--;
+				if (blinkNumberCount > 0) {
+					blinkState = 'blink2';
+				}
+				else {
+					blinkState = 'waiting';
+					blinkNumberCount = 1 + Math.floor(Math.random() * 2);
+				}
+			}
+		}
+	});
+
 };
 
 
