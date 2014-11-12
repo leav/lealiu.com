@@ -9,14 +9,9 @@ DialogBubble.prototype.Container_initialize = DialogBubble.prototype.initialize;
 DialogBubble.prototype.initialize = function() {
 	this.Container_initialize();
 	
-	// var top  = AsyncImage.get('Bubble-top');
-	// this.addChild(top);
-	
-	// var back = AsyncImage.get('Bubble-back');
-	// this.addChild(back);
-	
-	// var bottom  = AsyncImage.get('Bubble-bottom');
-	// this.addChild(bottom);
+	this.addEventListener('click', function(){
+		$state.startBrowsing();
+	});
 	
 	var bubble =  new createjs.Shape();
 	this.addChild(bubble);

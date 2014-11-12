@@ -41,6 +41,9 @@ Background.prototype.initialize = function() {
 	var autoplay = createButton('SL_autoplay');
 	l2Contents.addChild(autoplay);
 	buttons.push(autoplay);
+	autoplay.addEventListener('click', function(){
+		$state.startBrowsing();
+	});
 	autoplay.dialogText = "Start browsing my portfolio";
 	
 	var fatloot = createButton('SL_fatloot');
@@ -201,6 +204,8 @@ Background.prototype.initialize = function() {
 		self.width = l2.asset.width * scale;
 		
 		if ($state.state == 'Home') {
+			$state.nextState = 'About';
+			$state.nextTag = $state.nextPage = null;
 			fullMask.visible = false;
 			buttons.forEach(function(v){v.visible = true;});
 		}

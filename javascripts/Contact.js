@@ -53,6 +53,9 @@ Contact.prototype.initialize = function() {
 		if ($state.state == 'Contact') {
 			self.visible = true;
 			
+			$state.nextState = 'Home';
+			$state.nextTag = $state.nextPage = null;
+			
 			$state.prevState = 'Gallery';
 			$state.prevTag = $state.galleryTag;
 			$state.prevPage = -1;

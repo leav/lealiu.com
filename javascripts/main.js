@@ -126,12 +126,10 @@ function defineState(state) {
 	state.addEventListener('switch', function(event) {
 		var state = event.newState;
 		$log.debug('main state swith, state = ' + state);
-		var tag, page, image;
-		if (event.args) {
-			tag = event.args[0];
-			page = event.args[1];
-			image = event.args[2];
-		}
+		var tag = event.newTag;
+		var page = event.newPage;
+		var	image = event.newImage;
+		
 		if (state == 'Gallery') {
 			if (!tag)	{
 				tag = 'All';
