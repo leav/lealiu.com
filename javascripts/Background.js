@@ -106,42 +106,57 @@ Background.prototype.initialize = function() {
 	back.addChild(l1);
 	
 	var self = this;
-	var doLayout = function(){
-		var scaleWidth = getWindowWidth() / l2.asset.width;
-		var scaleHeight = getWindowHeight() / l2.asset.height;
-		var scale = scaleWidth > scaleHeight ? scaleWidth : scaleHeight;
-		back.scaleX = back.scaleY = scale;
-		
-		self.width = l2.asset.width * scale;
-		
-		if ($state.state == 'Home') {
-			fullMask.visible = false;
-			buttons.forEach(function(v){v.visible = true;});
+	
+	this.backgroundScrollX = this.backgroundScrollY = 0.5;
+	this.updateBackgroundScroll = function() {
+		if (self.backgroundScrollX < 0)	{
+			self.backgroundScrollX = 0;
 		}
-		else {
-			fullMask.visible = true;
-			fullMask.scaleX = getWindowWidth() / fullMask.width;
-			fullMask.scaleY = getWindowHeight() / fullMask.height;
-			buttons.forEach(function(v){v.visible = false;});
+		if (self.backgroundScrollX > 1)	{
+			self.backgroundScrollX = 1;
 		}
-	};
-	doLayout();
-	
-	$state.addEventListener('switch', doLayout);
-	window.addEventListener("resize", doLayout);
-	
-	
-	var doMousemove = function() {
-		l2Contents.x = (getWindowWidth() / back.scaleX - l2.asset.width) * (getMousePageX() / getWindowWidth());
-		l2Contents.y = (getWindowHeight() / back.scaleY - l2.asset.height) * (getMousePageY() / getWindowHeight());
-		l1.x = (getWindowWidth() / back.scaleX - l1.asset.width) * (getMousePageX() / getWindowWidth());
-		l1.y = (getWindowHeight() / back.scaleY - l1.asset.height) * (getMousePageY() / getWindowHeight());
-		l3.x = (getWindowWidth() / back.scaleX - l3.asset.width) * (getMousePageX() / getWindowWidth());
-		l3.y = (getWindowHeight() / back.scaleY - l3.asset.height) * (getMousePageY() / getWindowHeight());
+		if (self.backgroundScrollY < 0)	{
+			self.backgroundScrollY = 0;
+		}
+		if (self.backgroundScrollY > 1)	{
+			self.backgroundScrollY = 1;
+		}
+
+		l2Contents.x = (getWindowWidth() / back.scaleX - l2.asset.width) * self.backgroundScrollX;
+		l2Contents.y = (getWindowHeight() / back.scaleY - l2.asset.height) * self.backgroundScrollY;
+		l1.x = (getWindowWidth() / back.scaleX - l1.asset.width) * self.backgroundScrollX;
+		l1.y = (getWindowHeight() / back.scaleY - l1.asset.height) * self.backgroundScrollY;
+		l3.x = (getWindowWidth() / back.scaleX - l3.asset.width) * self.backgroundScrollX;
+		l3.y = (getWindowHeight() / back.scaleY - l3.asset.height) * self.backgroundScrollY;
 		// $log.debug('doMousemove l2.x = ' + l2.x);
 		// $log.debug('getMousePageX() / getWindowWidth() = ' + getMousePageX() / getWindowWidth());
 	};
-	document.addEventListener('mousemove', doMousemove);
+	this.updateBackgroundScroll();
+	
+	var scrollSpeed = 2.0;
+	var scrollRange = 0.2;
+	createjs.Ticker.addEventListener("tick", function(event){
+		if ($state.state != "Home") {
+			return;
+		}
+		var dist = scrollSpeed * event.delta / 1000;
+		if (getMousePageX() <= getWindowWidth() * scrollRange && self.backgroundScrollX > 0) {
+			self.backgroundScrollX -= dist;
+			self.updateBackgroundScroll();
+		}
+		else if (getMousePageX() >= getWindowWidth() * (1 - scrollRange) && self.backgroundScrollX < 1) {
+			self.backgroundScrollX += dist;
+			self.updateBackgroundScroll();
+		}
+		if (getMousePageY() <= getWindowHeight() * scrollRange && self.backgroundScrollY > 0) {
+			self.backgroundScrollY -= dist;
+			self.updateBackgroundScroll();
+		}
+		else if (getMousePageY() >= getWindowHeight() * (1 - scrollRange) && self.backgroundScrollY < 1) {
+			self.backgroundScrollY += dist;
+			self.updateBackgroundScroll();
+		}
+	});
 	
 	
 	// var doScroll = function(){
@@ -176,6 +191,33 @@ Background.prototype.initialize = function() {
 			createjs.Ticker.addEventListener("tick", doAutoSlide);
 		}
 	}
+	
+	var doLayout = function(){
+		var scaleWidth = getWindowWidth() / l2.asset.width;
+		var scaleHeight = getWindowHeight() / l2.asset.height;
+		var scale = scaleWidth > scaleHeight ? scaleWidth : scaleHeight;
+		back.scaleX = back.scaleY = scale;
+		
+		self.width = l2.asset.width * scale;
+		
+		if ($state.state == 'Home') {
+			fullMask.visible = false;
+			buttons.forEach(function(v){v.visible = true;});
+		}
+		else {
+			fullMask.visible = true;
+			fullMask.scaleX = getWindowWidth() / fullMask.width;
+			fullMask.scaleY = getWindowHeight() / fullMask.height;
+			buttons.forEach(function(v){v.visible = false;});
+		}
+		
+		self.updateBackgroundScroll();
+	};
+	doLayout();
+	
+	$state.addEventListener('switch', doLayout);
+	window.addEventListener("resize", doLayout);
+	
 }
 
 
