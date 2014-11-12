@@ -40,6 +40,7 @@ Works.prototype.initialize = function() {
 	
 	var stage = new createjs.Stage("worksCanvas");
 	this.stage = stage;
+	stage.enableMouseOver();
 	var updateStage = function(){
 		if ($state.state == 'Works') {
 			stage.update();
@@ -72,6 +73,7 @@ Works.prototype.initialize = function() {
 		logo.addEventListener('click', function(){
 			$state.switch($state.state, work);
 		});
+		addCursorPointer(logo);
 
 		logoColumn++;
 		if (logo.asset.height > maxHeight) {
