@@ -26,6 +26,7 @@ Background.prototype.initialize = function() {
 	fullMask.width = fullMask.height = 4;
 	fullMask.graphics.beginFill("rgba(0,0,0,0.3)").drawRect(0, 0, fullMask.width, fullMask.height);
 	fullMask.cache(0, 0, fullMask.width, fullMask.height);
+	fullMask.addEventListener('click', function(){$state.switch('Home')});
 
 	var buttons = [];
 	
