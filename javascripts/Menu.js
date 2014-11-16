@@ -58,10 +58,6 @@ Menu.prototype.initialize = function() {
 	character.addChild($dialog);
 	$dialog.x = characterBody.asset.width * 0.7;
 	$dialog.y = 120;
-	console.log($dialog);
-	$dialog.setText('Welcome!', 0, 3);
-	$dialog.setText('Click here to start browsing my portfolio', 4, 6);
-
 	
 	document.addEventListener('mousemove', function (event) {
 		eyeBall.x	= getMousePageX() / getWindowWidth() * eyeBallXRange + eyeBallXMin;

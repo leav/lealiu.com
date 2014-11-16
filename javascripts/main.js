@@ -56,14 +56,34 @@ function init() {
 	// update
 	createjs.Ticker.setFPS(20);
 	createjs.Ticker.addEventListener("tick", onUpdate);
+	
+	// LoadingBar
+	var loadingBar = new LoadingBar(AsyncImage.total);
+	$stage.addChild(loadingBar);
+	$backgroundLayer.alpha = $menuLayer.alpha = $contentLayer.alpha = 0.0;
+	
+	var updateLoaded = function(){
+		loadingBar.setLoaded(AsyncImage.loaded);
+		$log.debug(loadingBar.loaded + '/' + loadingBar.total);
+		if (loadingBar.loaded >= loadingBar.total){
+			createjs.Ticker.removeEventListener("tick", updateLoaded);
+			fadeIn($backgroundLayer);
+			fadeIn($menuLayer);
+			fadeIn($contentLayer);
+			fadeOut(loadingBar);
+			$dialog.setText('Welcome!', 0, 3);
+			$dialog.setText('Click here to start browsing my portfolio', 4, 6);
+		}
+	}
+	createjs.Ticker.addEventListener("tick", updateLoaded);
 }
 
 function createLayers() {
 	$log.debug('createLayers()');
 	$backgroundLayer = new createjs.Container();
 	$stage.addChild($backgroundLayer);
-	$imageLayer = new createjs.Container();
-	$stage.addChild($imageLayer);
+	// $imageLayer = new createjs.Container();
+	// $stage.addChild($imageLayer);
 	$menuLayer = new createjs.Container();
 	$stage.addChild($menuLayer);
 	$contentLayer = new createjs.Container();
@@ -201,8 +221,8 @@ function hideImage(asset)
 //
 function onUpdate(event) {
 	// resize the canvas
-	$stage.canvas.width = $background.width;
-	$stage.canvas.height = getCanvasHeight();
+	$stage.canvas.width = getWindowWidth();
+	$stage.canvas.height = getWindowHeight();
 	// update the stage
 	$stage.update(event)
 	

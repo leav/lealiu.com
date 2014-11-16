@@ -6,7 +6,10 @@ function AsyncImage(asset) {
 }
 createjs.EventDispatcher.initialize(AsyncImage.prototype); // mixin EventDispatcher
 AsyncImage.prototype = new createjs.Container();
- 
+
+AsyncImage.total = 0;
+AsyncImage.loaded = 0;
+
 AsyncImage.prototype.Container_initialize = AsyncImage.prototype.initialize;
 AsyncImage.prototype.initialize = function(asset) {
 	this.Container_initialize();
@@ -33,6 +36,8 @@ AsyncImage.prototype.setAsset = function(asset) {
 	preload.on("fileload", this.onFileload, this);
 	preload.loadFile(asset.path);
 	
+	AsyncImage.total++;
+	
 	if (this.bitmap) {
 		this.bitmap.image = null;
 		//this.bitmap.visible = false;
@@ -43,6 +48,7 @@ AsyncImage.prototype.setAsset = function(asset) {
 
 AsyncImage.prototype.onFileload = function(event) {
 	//$log.debug(event.item.src + ' loaded')
+	AsyncImage.loaded++;
 	if (!this.bitmap)
 	{
 		this.bitmap = new createjs.Bitmap(event.result);
