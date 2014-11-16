@@ -64,6 +64,8 @@ Works.prototype.initialize = function() {
 	var logoX = canvas.width * workLogoPadding;
 	var logoColumn = 0;
 	works.forEach(function(work){
+		AsyncImage.get('Workspage_' + work); // preload
+	
 		var asset = findAsset('Works_' + work, ['Works']);
 		var logo = AsyncImage.get(asset);
 		stage.addChild(logo);
