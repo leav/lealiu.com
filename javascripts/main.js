@@ -23,6 +23,14 @@ function init() {
 	$stage = new createjs.Stage('mainCanvas');
 	$stage.enableMouseOver();
 	
+	// needUpdateTimeout
+	$stage.needUpdateTimeout = 0;
+	$stage.setNeedUpdateTimeout = function(timeout) {
+		if (timeout > $stage.needUpdateTimeout) {
+			$stage.needUpdateTimeout = timeout;
+		}
+	}
+	
 	// create layers
 	createLayers();
 	
@@ -55,7 +63,26 @@ function init() {
 	
 	// update
 	createjs.Ticker.setFPS(20);
-	createjs.Ticker.addEventListener("tick", onUpdate);
+	createjs.Ticker.addEventListener("tick", function(event){
+		// resize the canvas
+		var width = getWindowWidth();
+		var height = getWindowHeight();
+		if ($stage.canvas.width != width || $stage.canvas.height != height) {
+			$stage.canvas.width = width;
+			$stage.canvas.height = height;
+			$stage.needUpdate = true;
+		}
+		if ($stage.needUpdateTimeout > 0) {
+			$stage.needUpdateTimeout -= event.delta / 1000;
+			$stage.needUpdate = true;
+		}
+		// update the stage
+		if ($stage.needUpdate) {
+			$stage.needUpdate = false;
+			$stage.update(event)
+			// $log.debug('$stage.update(event) $stage.needUpdateTimeout ' + $stage.needUpdateTimeout);
+		}
+	});
 	
 	// LoadingBar
 	var loadingBar = new LoadingBar(AsyncImage.total);
@@ -66,6 +93,7 @@ function init() {
 		loadingBar.setLoaded(AsyncImage.loaded);
 		$log.debug(loadingBar.loaded + '/' + loadingBar.total);
 		if (loadingBar.loaded >= loadingBar.total){
+			$stage.needUpdate = true;
 			createjs.Ticker.removeEventListener("tick", updateLoaded);
 			fadeIn($backgroundLayer);
 			fadeIn($menuLayer);
@@ -76,6 +104,15 @@ function init() {
 		}
 	}
 	createjs.Ticker.addEventListener("tick", updateLoaded);
+	
+	// stageNeedUpdate
+	var stageNeedUpdate = function() {
+		// $log.debug('stageNeedUpdate()');
+		$stage.needUpdate = true;
+	}
+	
+	$state.addEventListener('switch', stageNeedUpdate);
+	window.addEventListener('resize', stageNeedUpdate);
 }
 
 function createLayers() {
@@ -213,27 +250,6 @@ function hideImage(asset)
 	if (image) {
 		image.visible = false;
 	}
-}
-
-
-//
-// update, called every frame
-//
-function onUpdate(event) {
-	// resize the canvas
-	$stage.canvas.width = getWindowWidth();
-	$stage.canvas.height = getWindowHeight();
-	// update the stage
-	$stage.update(event)
-	
-
-	// var bg = findAsset('Back-L2');
-	// scale getCanvasHeight() / bg.height;
-	// bg.width
-	
-	// $menuStage.canvas.width = getWindowWidth();
-	// $menuStage.canvas.height = getWindowHeight();
-	// $menuStage.update(event)
 }
 
 //

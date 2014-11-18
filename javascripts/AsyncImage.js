@@ -19,6 +19,11 @@ AsyncImage.prototype.initialize = function(asset) {
 }
 
 AsyncImage.prototype.setAsset = function(asset) {
+
+	if (this.asset == asset) {
+		return;
+	}
+
 	this.asset = asset;
 	this.width = asset.width;
 	this.height = asset.height;
@@ -43,11 +48,13 @@ AsyncImage.prototype.setAsset = function(asset) {
 		//this.bitmap.visible = false;
 	}
 	this.placeHolder.visible = true;
-
+	
+	$stage.needUpdate = true;
 }
 
 AsyncImage.prototype.onFileload = function(event) {
 	//$log.debug(event.item.src + ' loaded')
+	$stage.needUpdate = true;
 	AsyncImage.loaded++;
 	if (!this.bitmap)
 	{

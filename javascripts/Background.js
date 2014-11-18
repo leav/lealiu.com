@@ -132,6 +132,11 @@ Background.prototype.initialize = function() {
 		l1.y = (getWindowHeight() / back.scaleY - l1.asset.height) * self.backgroundScrollY;
 		l3.x = (getWindowWidth() / back.scaleX - l3.asset.width) * self.backgroundScrollX;
 		l3.y = (getWindowHeight() / back.scaleY - l3.asset.height) * self.backgroundScrollY;
+		
+		if (self.getStage()) {
+			self.getStage().needUpdate = true;
+		}
+		
 		// $log.debug('doMousemove l2.x = ' + l2.x);
 		// $log.debug('getMousePageX() / getWindowWidth() = ' + getMousePageX() / getWindowWidth());
 	};

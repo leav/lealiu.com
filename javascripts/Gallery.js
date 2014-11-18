@@ -169,10 +169,16 @@ Gallery.prototype.initialize = function() {
 				button.addEventListener('mouseover', function(){
 					button.on.visible = true;
 					button.off.visible = false;
+					if (button.getStage()) {
+						button.getStage().needUpdate = true;
+					}
 				});
 				button.addEventListener('mouseout', function(){
 					button.on.visible = false;
 					button.off.visible = true;
+					if (button.getStage()) {
+						button.getStage().needUpdate = true;
+					}
 				});
 				button.tag = tag;
 				button.addEventListener('click', function(){
@@ -237,9 +243,15 @@ Gallery.prototype.initialize = function() {
 				imageSample.frame.cache(-2, -2, galleryAsset.sample.width + 4, galleryAsset.sample.height + 4);
 				imageSample.addEventListener('mouseover', function(event){
 					event.currentTarget.cover.visible = false;
+					if (imageSample.getStage()) {
+						imageSample.getStage().needUpdate = true;
+					}
 				});
 				imageSample.addEventListener('mouseout', function(event){
 					event.currentTarget.cover.visible = true;
+					if (imageSample.getStage()) {
+						imageSample.getStage().needUpdate = true;
+					}
 				});
 				imageSample.originalName = galleryAsset.name;
 				imageSample.addEventListener("click", function(event){

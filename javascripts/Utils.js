@@ -29,6 +29,9 @@ function createButton(assetName)
 			$dialog.setText(container.dialogText);
 			$dialog.textOwner = container;
 		}
+		if (container.getStage()) {
+			container.getStage().needUpdate = true;
+		}
 	});
 	
 	container.mouseout = function(event){
@@ -37,6 +40,9 @@ function createButton(assetName)
 		if ($dialog && $dialog.textOwner == container) {
 			$dialog.setText();
 			$dialog.textOwner = null;
+		}
+		if (container.getStage()) {
+			container.getStage().needUpdate = true;
 		}
 	};
 	container.addEventListener("mouseout", container.mouseout);
@@ -50,13 +56,6 @@ function createButton(assetName)
 
 function addCursorPointer(container) {
 	container.cursor = 'pointer';
-	// container.addEventListener("mouseover", function(event){
-		// document.body.style.cursor = 'pointer';
-	// });
-	
-	// container.addEventListener("mouseout", function(event){
-		// document.body.style.cursor = 'auto';
-	// });
 }
 
 //
@@ -264,10 +263,12 @@ function getMousePageY() {
 
 function fadeIn(object) {
 	createjs.Tween.get(object).to({alpha:1.0}, 400, createjs.Ease.get(1));
+	$stage.setNeedUpdateTimeout(1.0);
 }
 
 function fadeOut(object) {
 	createjs.Tween.get(object).to({alpha:0.0}, 400, createjs.Ease.get(-1));
+	$stage.setNeedUpdateTimeout(1.0);
 }
 
 //+ Jonas Raoni Soares Silva
