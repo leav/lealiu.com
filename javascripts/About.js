@@ -52,21 +52,39 @@ About.prototype.initialize = function() {
 	var imageAssets = findAssetsByTags(['About']);
 	var images = new createjs.Container();
 	this.addChild(images);
-	var imageAssetSize = null;
-	images.alpha = 0.85;
+	var imageAssetSize = 0;
 	var imageY = 0;
+	var imageDistRatio = 1.05;
+	var imageAlpha = 0.85;
+	var imageMouseOverAlpha = 1.0;
+	var imageScrolling = true;
+
 	imageAssets.forEach(function(asset){
 		var image = AsyncImage.get(asset);
 		images.addChild(image);
 		imageAssetSize = asset.width;
 		image.y = imageY;
-		imageY += asset.height * 1.05;
+		image.alpha = imageAlpha;
+		imageY += asset.height * imageDistRatio;
 		image.addEventListener('fileload', function(){
 			if ($state.state == 'About') {
 				images.cache(0, 0, imageAssetSize, imageAssetSize * 1.1 * imageAssets.length);
 			}
 		});
+		image.addEventListener('mouseover', function(event){
+			imageScrolling = false;
+			event.currentTarget.alpha = imageMouseOverAlpha;
+			images.cache(0, 0, imageAssetSize, imageAssetSize * 1.1 * imageAssets.length);
+			$stage.needUpdate = true;
+		});
+		image.addEventListener('mouseout', function(event){
+			imageScrolling = true;
+			event.currentTarget.alpha = imageAlpha;
+			images.cache(0, 0, imageAssetSize, imageAssetSize * 1.1 * imageAssets.length);
+			$stage.needUpdate = true;
+		});
 	});
+	images.height = imageY - imageAssetSize * (imageDistRatio - 1);
 	
 	var imagesMask = new createjs.Shape();
 	imagesMask.cache(0, 0, imageAssetSize, imageAssetSize);
@@ -133,9 +151,10 @@ About.prototype.initialize = function() {
 					beginLinearGradientFill(["rgba(0, 0, 0, 1.0)", "rgba(0, 0, 0, 0.0)"], [0, 1], 0, maskHeight - maskGradientHeight, 0, maskHeight).
 					drawRect(0, maskHeight - maskGradientHeight, imageAssetSize, maskGradientHeight).
 					beginFill('rgba(0, 0, 0, 1)').
-					drawRect(0, maskGradientHeight, imageAssetSize, maskHeight - 2 * maskGradientHeight);
+					drawRect(0, maskGradientHeight - 1, imageAssetSize, maskHeight - 2 * maskGradientHeight + 2);
 				$log.debug('getWindowHeight() = ' + getWindowHeight() + ' scale = ' +
 					images.scaleY + ' imageAssetSize = ' + imageAssetSize + ' maskHeight = ' + maskHeight);
+				imagesMask.height = maskHeight;
 				imagesMask.cache(0, 0, imageAssetSize, maskHeight);
 				images.cache(0, 0, imageAssetSize, maskHeight);
 			}
@@ -148,6 +167,28 @@ About.prototype.initialize = function() {
 	
 	$state.addEventListener('switch', doLayout);
 	window.addEventListener("resize", doLayout);
-	
 	doLayout();
+	
+	var scrollSpeed = 20;
+	var updateImagesScroll = function(event) {
+		if ($state.state != 'About' || !imageScrolling) {
+			return;
+		}
+		if (images.height + imageAssetSize * imageDistRatio <= imagesMask.height) {
+			return;
+		}
+		var scrollDist = scrollSpeed * event.delta / 1000;
+		images.children.forEach(function(v) {
+			// console.log(v);
+			// console.log(v.y);
+			v.y -= scrollDist;
+			if (v.y < -imageAssetSize) {
+				v.y += images.height + imageAssetSize * (imageDistRatio - 1);
+			}
+		});
+		images.cache(0, 0, imageAssetSize, imagesMask.height);
+		$stage.needUpdate = true;
+	}
+	createjs.Ticker.addEventListener("tick", updateImagesScroll);
+
 }
