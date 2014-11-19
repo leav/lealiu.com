@@ -60,8 +60,16 @@ Menu.prototype.initialize = function() {
 	$dialog.y = 120;
 	
 	document.addEventListener('mousemove', function (event) {
-		eyeBall.x	= getMousePageX() / getWindowWidth() * eyeBallXRange + eyeBallXMin;
-		eyeBall.y	= getMousePageY() / getWindowHeight() * eyeBallYRange + eyeBallYMin;
+		if ($state.state != 'Home') {
+			return;
+		}
+		var x = getMousePageX() / getWindowWidth() * eyeBallXRange + eyeBallXMin;
+		var y = getMousePageY() / getWindowHeight() * eyeBallYRange + eyeBallYMin;
+		if (x != eyeBall.x || y != eyeBall.y) {
+			eyeBall.x	= x;
+			eyeBall.y	= y;
+			$stage.needUpdate = true;
+		}
 	});
 	
 	
@@ -214,11 +222,15 @@ Menu.prototype.initialize = function() {
 	var blinkCount = 0;
 	var blinkState = 'waiting';
 	createjs.Ticker.addEventListener("tick", function(event){
+		if ($state.state != 'Home') {
+			return;
+		}
 		blinkCount += event.delta / 1000;
 		if (blinkState == 'waiting') {
 			if (blinkCount >= blinkTimeout) {
 				blinkState = 'blink2';
 				eyeBlink2.visible = true;
+				$stage.needUpdate = true;
 				blinkCount = 0;
 				blinkTimeout = blinkTimeoutMin + Math.random() * (blinkTimeoutMax - blinkTimeoutMin);;
 			}
@@ -228,12 +240,14 @@ Menu.prototype.initialize = function() {
 				blinkState = 'blink3';
 				eyeBlink2.visible = false;
 				eyeBlink3.visible = true;
+				$stage.needUpdate = true;
 				blinkCount = 0;
 			}
 		}
 		else if (blinkState == 'blink3') {
 			if (blinkCount >= blink3Timeout) {
 				eyeBlink3.visible = false;
+				$stage.needUpdate = true;
 				blinkCount = 0;
 				blinkNumberCount--;
 				if (blinkNumberCount > 0) {
