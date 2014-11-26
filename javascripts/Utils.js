@@ -259,16 +259,26 @@ function getMousePageY() {
 	return mouse.pageY;
 }
 
+var globalFadeTime = 0.5;
 
-
-function fadeIn(object) {
-	createjs.Tween.get(object).to({alpha:1.0}, 400, createjs.Ease.get(1));
-	$stage.setNeedUpdateTimeout(1.0);
+function fadeIn(object, time) {
+	createjs.Tween.get(object, {override:true}).to({alpha:1.0}, time * 1000, createjs.Ease.get(1));
+	$stage.setNeedUpdateTimeout(time);
 }
 
-function fadeOut(object) {
-	createjs.Tween.get(object).to({alpha:0.0}, 400, createjs.Ease.get(-1));
-	$stage.setNeedUpdateTimeout(1.0);
+function fadeOut(object, time) {
+	createjs.Tween.get(object, {override:true}).to({alpha:0.0}, time * 1000, createjs.Ease.get(-1));
+	$stage.setNeedUpdateTimeout(time);
+}
+
+function tweenTo(object, x, y, time) {
+	if (object.x == x && object.y == y) {
+		createjs.Tween.removeTweens(object);
+		return;
+	}
+	$log.debug('tweenTo(object, ' + x + ', ' + y +', ' + time + ')');
+	createjs.Tween.get(object, {override:true}).to({x:x, y:y}, time * 1000, createjs.Ease.elasticInOut);
+	$stage.setNeedUpdateTimeout(time);
 }
 
 //+ Jonas Raoni Soares Silva

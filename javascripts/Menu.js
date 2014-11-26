@@ -9,17 +9,133 @@ Menu.prototype.Container_initialize = Menu.prototype.initialize;
 Menu.prototype.initialize = function() {
 	this.Container_initialize();
 	
-	// masks
+	// top
 	
-	var maskTop = AsyncImage.get('Mask-top');
-	//var maskHeight = this.maskTop.asset.height - 2;
-	this.addChild(maskTop);
+	var top = new createjs.Container();
+	this.addChild(top);
 	
-	var maskBottom = AsyncImage.get('Mask-bottom');
-	this.addChild(maskBottom);
+	var maskTop = new createjs.Shape();
+	top.addChild(maskTop);
+	maskTop.graphics.beginFill('rgba(0, 0, 0, 0.7)').
+		drawRect(0, 0, 64, 240).
+		beginFill('rgba(160, 160, 147, 0.7)').
+		drawRect(0, 240, 64, 2);
+	maskTop.cache(0, 0, 64, 242);
+	maskTop.regX = 64;
+	maskTop.regY = 120;
+	maskTop.width = 64;
+	maskTop.height = 122;
+	
+	// buttons
+	
+	var button;
+	var buttonPadding = 4;
+	var buttonX = -buttonPadding;
+	var buttonY = maskTop.height - 2;
+	
+	button = createButton('Button_Contact');
+	top.addChild(button);
+	button.y = buttonY;
+	buttonX -= button.off.asset.width + buttonPadding;
+	button.x = buttonX;
+	button.addEventListener('click', function(){
+		$state.switch('Contact');
+	});
+	button.dialogText = 'Ways to catch me';
+	
+	button = createButton('Button_Gallery');
+	top.addChild(button);
+	button.y = buttonY;
+	buttonX -= button.off.asset.width + buttonPadding;
+	button.x = buttonX;
+	button.addEventListener('click', function(){
+		$state.switch('Gallery', 'All', 1);
+	});
+	button.dialogText = 'Doodles';
+	
+	button = createButton('Button_Works');
+	top.addChild(button);
+	button.y = buttonY;
+	buttonX -= button.off.asset.width + buttonPadding;
+	button.x = buttonX;
+	button.addEventListener('click', function(){
+		$state.switch('Works');
+	});
+	button.dialogText = 'Holes';
+	
+	button = createButton('Button_About');
+	top.addChild(button);
+	button.y = buttonY;
+	buttonX -= button.off.asset.width + buttonPadding;
+	button.x = buttonX;
+	button.addEventListener('click', function(){
+		$state.switch('About');
+	});
+	button.dialogText = 'Want to know about me?';
+	
+	button = createButton('Button_Home');
+	top.addChild(button);
+	button.y = buttonY;
+	buttonX -= button.off.asset.width + buttonPadding;
+	button.x = buttonX;
+	button.addEventListener('click', function(){
+		$state.switch('Home');
+	});
+
+	// logo
+	
+	var logo = AsyncImage.get('Logo');
+	top.addChild(logo);
+	logo.regY = -8;
+	logo.regX = logo.asset.width + 16;
+	
+	// prev / next buttons
+	
+	var prevButton = createButton('Button_Prev');
+	this.addChild(prevButton);
+	prevButton.addEventListener('click', function(event){
+		if ($state.prevState) {
+			$state.switch($state.prevState, $state.prevTag, $state.prevPage);
+		}
+	});
+	
+	var nextButton = createButton('Button_Next');
+	this.addChild(nextButton);
+	nextButton.addEventListener('click', function(event){
+		if ($state.nextState) {
+			$state.switch($state.nextState, $state.nextTag, $state.nextPage);
+		}
+	});	
+
+	// bottom
+	
+	var bottom = new createjs.Container();
+	this.addChild(bottom);
+	bottom.y = getWindowHeight();
+	
+	var maskBottom = new createjs.Shape();
+	bottom.addChild(maskBottom);
+	maskBottom.graphics.beginFill('rgba(0, 0, 0, 0.7)').
+		drawRect(0, 2, 64, 112).
+		beginFill('rgba(160, 160, 147, 0.7)').
+		drawRect(0, 0, 64, 2);
+	maskBottom.cache(0, 0, 64, 114);
+	maskBottom.regX = 64;
+	maskBottom.regY = 56;
+	maskBottom.width = 64;
+	maskBottom.height = 58;
+	
+	// var maskBottom = AsyncImage.get('Mask-bottom');
+	// bottom.addChild(maskBottom);
+	// maskBottom.regY = maskBottom.asset.height;
+	// maskBottom.regX = maskBottom.asset.width;
 	
 	var socialMedia = new SocialMedia();
-	this.addChild(socialMedia);
+	bottom.addChild(socialMedia);
+	socialMedia.regY = socialMedia.height + 8;
+	socialMedia.regX = socialMedia.width + 16;
+	
+	// character
 	
 	var character = new createjs.Container();
 	this.addChild(character);
@@ -71,126 +187,37 @@ Menu.prototype.initialize = function() {
 			$stage.needUpdate = true;
 		}
 	});
-	
-	
-	// buttons
-	
-	var top = new createjs.Container();
-	this.addChild(top);
-	var button;
-	
-	button = createButton('Button_Home');
-	top.addChild(button);
-	button.addEventListener('click', function(){
-		$state.switch('Home');
-	});
-	
-	button = createButton('Button_About');
-	top.addChild(button);
-	button.addEventListener('click', function(){
-		$state.switch('About');
-	});
-	button.dialogText = 'Want to know about me?';
-	
-	button = createButton('Button_Works');
-	top.addChild(button);
-	button.addEventListener('click', function(){
-		$state.switch('Works');
-	});
-	button.dialogText = 'Holes';
-	
-	button = createButton('Button_Gallery');
-	top.addChild(button);
-	button.addEventListener('click', function(){
-		$state.switch('Gallery', 'All', 1);
-	});
-	button.dialogText = 'Doodles';
-	
-	button = createButton('Button_Contact');
-	top.addChild(button);
-	button.addEventListener('click', function(){
-		$state.switch('Contact');
-	});
-	button.dialogText = 'Ways to catch me';
-
-	// logo
-	
-	var logo = AsyncImage.get('Logo');
-	this.addChild(logo);
-	
-	// prev / next buttons
-	
-	var prevButton = createButton('Button_Prev');
-	this.addChild(prevButton);
-	prevButton.addEventListener('click', function(event){
-		if ($state.prevState) {
-			$state.switch($state.prevState, $state.prevTag, $state.prevPage);
-		}
-	});
-	
-	var nextButton = createButton('Button_Next');
-	this.addChild(nextButton);
-	nextButton.addEventListener('click', function(event){
-		if ($state.nextState) {
-			$state.switch($state.nextState, $state.nextTag, $state.nextPage);
-		}
-	});	
-	
+		
 	// doLayout()
 	
-	var doLayout = function() {
-		var padding = 16;
-		
+	var doLayout = function(event) {
 		if ($state.state == 'Home') {
-			maskTop.visible = maskBottom.visible = character.visible = logo.visible = socialMedia.visible = true;
-
-			maskTop.scaleY = 0.1 * getWindowHeight() / maskTop.asset.height;
-			maskTop.scaleX = getWindowWidth() / maskTop.asset.width;
-			
-			maskBottom.regY = maskBottom.asset.height;
-			maskBottom.y = getWindowHeight();
-			maskBottom.scaleX = getWindowWidth() / maskBottom.asset.width;
-			maskBottom.scaleY = 0.05 * getWindowHeight() / maskBottom.asset.height;
-			
+			character.visible = true;
 			character.regY = characterBody.asset.height;
 			character.x = 0.05 * getWindowWidth();
 			character.y = getWindowHeight();
 			character.scaleX = character.scaleY = 0.8 * getWindowHeight() / characterBody.asset.height;
-			
-			
-
-			logo.regX = logo.asset.width + padding * 4;
-			logo.x = getWindowWidth();
-			logo.y = getWindowHeight() * 0.007;
-			logo.scaleX = logo.scaleY = getWindowHeight() / maskTop.asset.height * 0.1;
-			
-			socialMedia.scaleX = socialMedia.scaleY = getWindowHeight() * 0.04 / socialMedia.height;
-			socialMedia.regX = socialMedia.width + padding * 4;
-			socialMedia.x = getWindowWidth();
-			socialMedia.y = getWindowHeight() * 0.96;
 		}
 		else {
-			maskTop.visible = maskBottom.visible = character.visible = logo.visible = socialMedia.visible = false;
+			character.visible = false;
 		}
 		
 		// buttons
-		top.regX = getWindowWidth();
 		top.x = getWindowWidth();
+		var tweenTime = (event && event.type == 'switch' ? 0.3 : 0);
+		bottom.x = getWindowWidth();
 		if ($state.state == 'Home') {
-			top.y = 0.1 * getWindowHeight();
+			tweenTo(top, top.x, 0, tweenTime)
+			tweenTo(bottom, bottom.x, getWindowHeight(), tweenTime)
 		}
 		else {
-			top.y = 0;
+			tweenTo(top, top.x, -0.1 * getWindowHeight(), tweenTime)
+			tweenTo(bottom, bottom.x, getWindowHeight() + 0.05 * getWindowHeight(), tweenTime)
 		}
-		top.scaleX = top.scaleY = getWindowHeight() / maskTop.asset.height * 0.1;
-		
-		var x = getWindowWidth() - padding * 2;
-		for (var i = top.children.length - 1; i >= 0; i--) {
-			var button = top.children[i];
-			x -= button.width;
-			button.x = x;
-			x -= padding;
-		}
+		top.scaleX = top.scaleY = getWindowHeight() / maskTop.height * 0.1;
+		maskTop.scaleX = getWindowWidth() / maskTop.width / top.scaleX;
+		bottom.scaleX = bottom.scaleY = getWindowHeight() / maskBottom.height * 0.05;
+		maskBottom.scaleX = getWindowWidth() / maskBottom.width / bottom.scaleX;
 		
 		prevButton.visible = ($state.state != 'Home' && $state.state != 'About');
 		nextButton.visible = ($state.state != 'Home' && $state.state != 'Contact');
@@ -203,8 +230,6 @@ Menu.prototype.initialize = function() {
 		prevButton.y = nextButton.y = getWindowHeight() / 2;
 		prevButton.scaleX = prevButton.scaleY = getWindowHeight() * 0.12 / prevButton.height;
 		nextButton.scaleX = nextButton.scaleY = getWindowHeight() * 0.12 / nextButton.height;
-
-		
 	};
 	
 	$state.addEventListener('switch', doLayout);

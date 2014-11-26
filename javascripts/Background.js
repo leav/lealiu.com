@@ -166,15 +166,6 @@ Background.prototype.initialize = function() {
 			self.updateBackgroundScroll();
 		}
 	});
-	
-	
-	// var doScroll = function(){
-		// var scroll = document.body.scrollLeft / (document.body.scrollWidth - document.body.clientWidth);
-		// l1.x = (l2.asset.width - l1.asset.width) * scroll;
-		// l3.x = (l2.asset.width - l3.asset.width) * scroll;
-	// };
-	// doScroll();
-	// window.addEventListener("scroll", doScroll);
 
 	if (autoSlideAssets.length > 0)
 	{
@@ -189,8 +180,8 @@ Background.prototype.initialize = function() {
 				if (autoSlideCount > autoSlideInterval) {
 					autoSlideCount = 0;
 					autoSlideBack.setAsset(autoSlideAssets[autoSlideIndex]);
-					fadeIn(autoSlideBack);
-					fadeOut(autoSlide);
+					fadeIn(autoSlideBack, globalFadeTime);
+					fadeOut(autoSlide, globalFadeTime);
 					var temp = autoSlideBack;
 					autoSlideBack = autoSlide;
 					autoSlide = temp;

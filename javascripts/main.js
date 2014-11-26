@@ -95,10 +95,10 @@ function init() {
 		if (loadingBar.loaded >= loadingBar.total){
 			$stage.needUpdate = true;
 			createjs.Ticker.removeEventListener("tick", updateLoaded);
-			fadeIn($backgroundLayer);
-			fadeIn($menuLayer);
-			fadeIn($contentLayer);
-			fadeOut(loadingBar);
+			fadeIn($backgroundLayer, globalFadeTime);
+			fadeIn($menuLayer, globalFadeTime);
+			fadeIn($contentLayer, globalFadeTime);
+			fadeOut(loadingBar, globalFadeTime);
 			$dialog.setText('Welcome!', 0, 3);
 			$dialog.setText('Click here to start browsing my portfolio', 4, 6);
 		}
