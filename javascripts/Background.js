@@ -192,6 +192,28 @@ Background.prototype.initialize = function() {
 		}
 	}
 	
+	var buttonsShuffled = [];
+	var buttonBlinkInterval = 6;
+	var buttonBlinkCount = 0;
+	var doButtonBlink = function(event){
+		buttonBlinkCount += event.delta / 1000;
+		if (buttonBlinkCount >= buttonBlinkInterval) {
+			buttonBlinkCount -= buttonBlinkInterval;
+			if (buttonsShuffled.length == 0) {
+				buttonsShuffled = shuffle(buttons.slice());
+			}
+			var button;
+			do {
+				button = buttonsShuffled.pop();
+			} while (button && button.on.alpha > 0)
+			// console.log(button);
+			if (button) {
+				button.blink();
+			}
+		}
+	}
+	createjs.Ticker.addEventListener("tick", doButtonBlink);
+
 	var doLayout = function(){
 		var scaleWidth = getWindowWidth() / l2.asset.width;
 		var scaleHeight = getWindowHeight() / l2.asset.height;

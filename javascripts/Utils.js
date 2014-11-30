@@ -19,12 +19,12 @@ function createButton(assetName)
 	
 	container.on = AsyncImage.get(assetName + '_on');
 	container.addChild(container.on);
-	container.on.visible = false;
+	container.on.alpha = 0;
 	
-	container.hitArea = container.off
 	container.addEventListener("mouseover", function(event){
-		container.on.visible = true;
-		container.off.visible = false;
+		createjs.Tween.removeTweens(container.on);
+		container.on.alpha = 1;
+		container.off.alpha = 0;
 		if ($dialog && container.dialogText) {
 			$dialog.setText(container.dialogText);
 			$dialog.textOwner = container;
@@ -35,8 +35,9 @@ function createButton(assetName)
 	});
 	
 	container.mouseout = function(event){
-		container.on.visible = false;
-		container.off.visible = true;
+		createjs.Tween.removeTweens(container.on);
+		container.on.alpha = 0;
+		container.off.alpha = 1;
 		if ($dialog && $dialog.textOwner == container) {
 			$dialog.setText();
 			$dialog.textOwner = null;
@@ -47,6 +48,17 @@ function createButton(assetName)
 	};
 	container.addEventListener("mouseout", container.mouseout);
 
+	container.blink = function() {
+		var time = 3;
+		createjs.Tween.get(container.on, {override:true}).
+			to({alpha:1.0}, time * 500, createjs.Ease.sineOut).
+			//wait(time * 500).
+			to({alpha:0}, time * 500, createjs.Ease.sineIn);
+		if (container.getStage()) {
+			container.getStage().setNeedUpdateTimeout(time);
+		}
+	}
+	
 	addCursorPointer(container);
 	
 	container.width = container.off.asset.width;
@@ -276,9 +288,30 @@ function tweenTo(object, x, y, time) {
 		createjs.Tween.removeTweens(object);
 		return;
 	}
-	$log.debug('tweenTo(object, ' + x + ', ' + y +', ' + time + ')');
+	// $log.debug('tweenTo(object, ' + x + ', ' + y +', ' + time + ')');
 	createjs.Tween.get(object, {override:true}).to({x:x, y:y}, time * 1000, createjs.Ease.elasticInOut);
 	$stage.setNeedUpdateTimeout(time);
+}
+
+function blink(object, time) {
+	if (!object.blinkFilter) {
+		object.blinkFilter = new createjs.ColorFilter(1,1,1,1,0,0,0,0);
+		if (!object.filters) {
+			object.filters = [];
+		}
+		object.filters.push(object.blinkFilter);
+	}
+	var strength = 128;
+	var tween = createjs.Tween.get(object.blinkFilter, {override:true}).
+		to({redOffset:strength, greenOffset:strength, blueOffset:strength}, time * 250, createjs.Ease.sineIn).
+		wait(time * 500).
+		to({redOffset:0, greenOffset:0, blueOffset:0}, time * 250, createjs.Ease.sineOut);
+	tween.addEventListener('change', function(event){
+		console.log(event);
+		console.log(tween);
+		object.updateCache();
+		$stage.needUpdate = true;
+	});
 }
 
 //+ Jonas Raoni Soares Silva
