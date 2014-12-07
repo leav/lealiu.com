@@ -12,8 +12,8 @@ LoadingBar.prototype.initialize = function(total) {
 	this.total = (total ? total : 0);
 	this.loaded = 0;
 	
-	// var background = new createjs.Shape();
-	// this.addChild(background);
+	var background = new createjs.Shape();
+	this.addChild(background);
 	
 	var bar = new createjs.Shape();
 	this.addChild(bar);
@@ -28,10 +28,16 @@ LoadingBar.prototype.initialize = function(total) {
 	bar.squareWidth = (bar.width - bar.squarePadding * 2 - bar.squareDist * (bar.numSquares - 1)) / bar.numSquares;
 	bar.squareHeight = bar.height - bar.squarePadding * 2;
 	
+	bar.backgroundColor = 'rgba(0, 0, 0, 1.0)';
 	bar.strokeColor = 'rgba(104, 89, 65, 1.0)';
 	bar.fillColor = 'rgba(235, 254, 114, 1.0)';
 	
-	var text = new createjs.Text('Loading', '1.5em Calibri', bar.strokeColor);
+	var logo = AsyncImage.get('Logo');
+	this.addChild(logo);
+	logo.regY = logo.asset.height * 1.2 + bar.regY;
+	logo.regX = bar.regX;
+	
+	var text = new createjs.Text('Loading', '1.8em Calibri', bar.strokeColor);
 	this.addChild(text);
 	text.regX = bar.regX;
 	text.regY = -text.getMeasuredHeight() * 0.1;
@@ -44,8 +50,16 @@ LoadingBar.prototype.initialize = function(total) {
 		if (!self.visible || !self.alpha > 0) {
 			return;
 		}
+		
+		// background
+		background.graphics.clear().
+			beginFill(bar.backgroundColor).
+			drawRect(0, 0, getWindowWidth(), getWindowHeight());
+			
+		// logo
+		
 		bar.graphics.clear().
-			// background
+			// bar
 			setStrokeStyle(bar.stroke).beginStroke(bar.strokeColor).
 			beginFill(bar.fillColor).
 			drawRect(0, 0, bar.width, bar.height).
@@ -59,9 +73,10 @@ LoadingBar.prototype.initialize = function(total) {
 		}
 			
 			
-		text.x = bar.x = getWindowWidth() / 2;
-		text.y = bar.y = getWindowHeight() / 2;
-		text.scaleX = text.scaleY = bar.scaleX = bar.scaleY = getWindowHeight() / bar.height * 0.05;
+		logo.x = text.x = bar.x = getWindowWidth() / 2;
+		logo.y = text.y = bar.y = getWindowHeight() / 2;
+		logo.scaleX = logo.scaleY = text.scaleX = text.scaleY = bar.scaleX = bar.scaleY =
+			getWindowHeight() / bar.height * 0.05;
 	}
 	
 	this.doLayout();
