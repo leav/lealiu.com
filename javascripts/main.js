@@ -31,6 +31,9 @@ function init() {
 		}
 	}
 	
+	// load logo first
+	AsyncImage.get('Logo');
+	
 	// create layers
 	createLayers();
 	
