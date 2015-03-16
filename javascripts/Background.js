@@ -36,7 +36,7 @@ Background.prototype.initialize = function() {
 	modeling.addEventListener('click', function(){
 		$state.switch('Gallery', 'Modeling', 1);
 	});
-	modeling.dialogText = "Can't affor GK >.<";
+	modeling.dialogText = "Can't afford GK >.<";
 
 	
 	var autoplay = createButton('SL_autoplay');
