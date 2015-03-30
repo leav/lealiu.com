@@ -111,6 +111,7 @@ Menu.prototype.initialize = function() {
 	
 	var bottom = new createjs.Container();
 	this.addChild(bottom);
+	bottom.x = getWindowWidth();
 	bottom.y = getWindowHeight();
 	
 	var maskBottom = new createjs.Shape();
@@ -125,6 +126,8 @@ Menu.prototype.initialize = function() {
 	maskBottom.width = 64;
 	maskBottom.height = 58;
 	
+	
+	
 	// var maskBottom = AsyncImage.get('Mask-bottom');
 	// bottom.addChild(maskBottom);
 	// maskBottom.regY = maskBottom.asset.height;
@@ -134,6 +137,18 @@ Menu.prototype.initialize = function() {
 	bottom.addChild(socialMedia);
 	socialMedia.regY = socialMedia.height + 8;
 	socialMedia.regX = socialMedia.width + 16;
+	
+	var license = AsyncImage.get('cc');
+	license.regX = socialMedia.width + 16 + license.width + 16;
+	license.regY = license.height + 8;
+	addCursorPointer(license);
+	license.a = document.createElement('a');
+	license.a.setAttribute('target', '_blank');
+	license.a.setAttribute('href', "http://creativecommons.org/licenses/by-nc/4.0/");
+	license.addEventListener('click', function(){
+			license.a.click();
+	});
+	bottom.addChild(license);
 	
 	// character
 	

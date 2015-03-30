@@ -3503,6 +3503,16 @@ $assets = [
   },
   {
     "type": "image",
+    "name": "cc",
+    "path": "assets/page_asset/cc.png",
+    "tags": [
+      "page_asset"
+    ],
+    "width": 88,
+    "height": 31
+  },
+  {
+    "type": "image",
     "name": "Character",
     "path": "assets/page_asset/Character.png",
     "tags": [
